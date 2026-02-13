@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Krishna, Will You Be My Valentine?</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root{ --card-w:380px; --anime:170px; --title:1.6rem; --couple:150px; }
+    @media (min-width:768px){ :root{ --card-w:460px; --anime:220px; --title:2rem; --couple:190px; } }
+    @media (min-height:850px){ :root{ --anime:240px; --couple:200px; } .card{padding:2rem 1.8rem 1.9rem;} }
+
+    body{margin:0;height:100vh;font-family:Inter,system-ui,sans-serif;background:linear-gradient(120deg,#ffe4e6,#ffd1dc,#fff1f2);
+      background-size:200% 200%;animation:bgShift 12s ease infinite;display:flex;align-items:center;justify-content:center;overflow:hidden}
+    @keyframes bgShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+
+    .postcard{position:fixed; inset:0; z-index:10; background:#fff; display:flex; align-items:center; justify-content:center;}
+    .postcard-card{background:#fff; border-radius:22px; padding:2.2rem 2rem; box-shadow:0 20px 40px rgba(0,0,0,.12); text-align:center; cursor:pointer;}
+    .postcard h2{font-family:Pacifico,cursive; font-size:1.9rem; color:#be185d; margin:0 0 .3rem;}
+    .postcard .heart{font-size:1.4rem; color:#e11d48}
+
+    .card{display:none;background:rgba(255,255,255,0.92);backdrop-filter:blur(10px); padding:1.8rem 1.6rem 1.7rem;border-radius:26px;
+      box-shadow:0 20px 40px rgba(236,72,153,0.25); text-align:center;width:92%;max-width:var(--card-w);}
+    h1{font-family:Pacifico,cursive;font-size:var(--title);color:#be185d;margin:.2rem 0 .2rem}
+    .hint{font-size:.85rem;color:#64748b;margin:.25rem 0 .5rem}
+    .sub{font-size:.95rem;color:#475569;margin-bottom:.4rem}
+
+    .anime-box{width:var(--anime);height:var(--anime);margin:.4rem auto .7rem;display:flex;align-items:center;justify-content:center}
+    .anime-box img{width:100%;height:100%;object-fit:contain;animation:float 3s ease-in-out infinite}
+    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+
+    .btns{position:relative;height:120px;display:flex;gap:0.8rem;align-items:flex-start;justify-content:center}
+    button{padding:.7rem 1.4rem;border:none;border-radius:999px;font-size:.95rem;cursor:pointer;box-shadow:0 8px 18px rgba(0,0,0,.12)}
+    #yes{background:linear-gradient(135deg,#ec4899,#fb7185);color:#fff;}
+    #no{background:#f1f5f9;color:#334155;position:relative}
+
+    .final{display:none;position:fixed;inset:0;z-index:6;align-items:center;justify-content:center;text-align:center;padding:1.4rem;flex-direction:column;
+      background:linear-gradient(rgba(255,228,230,.8),rgba(255,209,220,.8)),url('couple.jpg') center/cover no-repeat}
+    .final::before{content:"";position:absolute;inset:0;backdrop-filter:blur(10px)}
+    .final-inner{position:relative;z-index:2;background:rgba(255,255,255,.92);border-radius:22px;padding:1.1rem 1.1rem 1.2rem;max-width:460px;width:100%}
+    .final h2{font-family:Pacifico,cursive;font-size:2rem;color:#be185d;margin:.2rem 0}
+    .tiny-photo{width:var(--couple);height:var(--couple);border-radius:18px;object-fit:cover;border:3px solid #fff;margin:.35rem auto .45rem}
+    .replay{padding:.55rem 1.3rem;border-radius:999px;border:none;background:linear-gradient(135deg,#ec4899,#fb7185);color:#fff;font-size:.95rem;cursor:pointer}
+
+    .secret{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:#fff0f6;color:#be185d;padding:.6rem 1rem;border-radius:999px;box-shadow:0 8px 18px rgba(236,72,153,.25);font-size:.85rem;z-index:8;}
+    .heart{position:absolute;bottom:-20px;font-size:18px;opacity:.95;color:#e11d48;animation:floatUp 5s linear infinite;pointer-events:none}
+    @keyframes floatUp{0%{transform:translateY(0) scale(.9);opacity:0}10%{opacity:.95}100%{transform:translateY(-110vh) scale(1.5);opacity:0}}
+  </style>
+</head>
+<body>
+
+<audio id="bgMusic" src="bg-music.mp3" loop></audio>
+<audio id="kissSound" src="kiss.mp3" preload="auto"></audio>
+<audio id="openSound" src="open.mp3" preload="auto"></audio>
+
+<div class="postcard" id="postcard">
+  <div class="postcard-card" id="openCard">
+    <h2>From Mimi</h2>
+    <div class="heart">❤️</div>
+    <div style="font-size:.85rem;color:#64748b;margin-top:.4rem">Tap to open</div>
+  </div>
+</div>
+
+<div class="card" id="card">
+  <h1>Krishna, will you be my Valentine?</h1>
+  <div class="hint">Psst… try clicking “No” once 😏</div>
+  <div class="sub">From Mimi 💖</div>
+  <div class="anime-box"><img id="animeImg" src="kiss.png" alt=""></div>
+  <div class="btns">
+    <button id="yes">Yes</button>
+    <button id="no">No</button>
+  </div>
+</div>
+
+<div class="final" id="final">
+  <div class="final-inner">
+    <img src="couple.jpg" class="tiny-photo" id="couplePhoto">
+    <h2>You’re my Valentine, Krishna 💗</h2>
+    <p style="font-weight:600;color:#be185d">You just made Mimi smile so wide 💕<br>I just wanted to see you smile like this.</p>
+    <p>Love, Mimi</p>
+    <p style="font-size:.85rem;color:#64748b">Tip: Tap our photo 💕</p>
+    <button class="replay" id="replayBtn">Replay 💫</button>
+  </div>
+</div>
+
+<script>
+const openCard=document.getElementById("openCard");
+const postcard=document.getElementById("postcard");
+const card=document.getElementById("card");
+const finalScreen=document.getElementById("final");
+const yesBtn=document.getElementById("yes");
+const noBtn=document.getElementById("no");
+const animeImg=document.getElementById("animeImg");
+const couplePhoto=document.getElementById("couplePhoto");
+const replayBtn=document.getElementById("replayBtn");
+const bgMusic=document.getElementById("bgMusic");
+const kissSound=document.getElementById("kissSound");
+const openSound=document.getElementById("openSound");
+
+const images=["kiss.png","selfie.png","lipstick.png"];
+let i=0;
+
+setInterval(()=>animeImg.src=images[i=(i+1)%images.length],2200);
+
+openCard.addEventListener("click",()=>{
+  openSound.currentTime=0; openSound.play().catch(()=>{});
+  bgMusic.currentTime=0; bgMusic.volume=0.5; bgMusic.play().catch(()=>{});
+  postcard.style.display="none";
+  card.style.display="block";
+});
+
+yesBtn.addEventListener("click",()=>{
+  kissSound.currentTime=0; kissSound.play().catch(()=>{});
+  finalScreen.style.display="flex";
+  spawnHearts(40);
+});
+
+noBtn.addEventListener("mouseenter",()=>moveNo());
+noBtn.addEventListener("touchstart",()=>moveNo());
+function moveNo(){
+  const rect=card.getBoundingClientRect();
+  noBtn.style.position="absolute";
+  noBtn.style.left=Math.random()*(rect.width-80)+"px";
+  noBtn.style.top=Math.random()*(rect.height-120)+"px";
+}
+
+couplePhoto.addEventListener("click",()=>{
+  const msg=document.createElement("div");
+  msg.className="secret";
+  msg.textContent="Miss you, come home soon";
+  document.body.appendChild(msg);
+  setTimeout(()=>msg.remove(),2000);
+});
+
+let pressTimer;
+couplePhoto.addEventListener("touchstart",()=>{
+  pressTimer=setTimeout(()=>{
+    const msg=document.createElement("div");
+    msg.className="secret";
+    msg.textContent="I miss you";
+    document.body.appendChild(msg);
+    setTimeout(()=>msg.remove(),2000);
+  },600);
+});
+couplePhoto.addEventListener("touchend",()=>clearTimeout(pressTimer));
+
+replayBtn.addEventListener("click",()=>{
+  finalScreen.style.display="none";
+  card.style.display="block";
+});
+
+function spawnHearts(n){
+  for(let j=0;j<n;j++){
+    const h=document.createElement("div");
+    h.className="heart";
+    h.textContent="❤";
+    h.style.left=Math.random()*100+"vw";
+    document.body.appendChild(h);
+    setTimeout(()=>h.remove(),5000);
+  }
+}
+</script>
+</body>
+</html>
